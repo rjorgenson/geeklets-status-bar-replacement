@@ -1,3 +1,0 @@
-* Get output to work via GeekTool
-    currently works fine in terminal but outputs nothing in GeekTool
-* Add battery monitor script using ioreg for Macbook Pro
