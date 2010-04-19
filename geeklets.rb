@@ -10,7 +10,7 @@ def get_battery_info
   chg = `ioreg -l | grep ExternalConnected | awk '{ print $5 }'`
   mb = `ioreg -l | grep MaxCapacity | awk '{ print $5 }'`
   cb = `ioreg -l | grep CurrentCapacity | awk '{ print $5 }'`
-  puts "#{(chg.strip == "Yes" ? "Charging: " : "Battery: ")}#{(cb.to_f / mb.to_f * 100).to_i}%"
+  puts "#{(chg.strip == "Yes" ? "Charging: " : "Battery: ")}#{(cb.to_f / mb.to_f * 100).round}%"
 end
 
 ARGV.each do|a|
