@@ -1,7 +1,46 @@
 #!/usr/bin/env ruby
+#
+# Author: Robert (rjorgenson@gmail.com)
+#
+# Usage: geeklets.sh <arg1> <arg2> <arg3>
+#
+# arg1 can be any supprted geeklet, currently time & battery
+# arg2 can be options for those geeklets as documented below
+#
+# geeklet options:
+#
+# => time:
+# =>  long: time & date in long format (Saturday, September 14 11:59 PM)
+# =>  short: time & date in short format (Sat, Sep 14 11:59 PM)
+# =>  time: reports just the time (11:59 PM)
+# =>  longdate: reports just the date in long format (see above)
+# =>  shortdate: reports just the date in short format (see above)
+# =>  string: takes a ruby strftime formatted date string
+# =>  see http://ruby-doc.org/core/classes/Time.html#M000298
+# =>  example: geeklets.rb time string "%A, %B %d %I:%M %p" would yeild the same
+# =>  results as geeklets.sh time long, strings with spaces must be contained
+# =>  with quotation marks.
+#
+# =>  default behavior of time is to report long time format when there are
+# =>  no arguments given
 
 def get_time_date # gets the current time and formats it as specified
-  puts Time.now.strftime("%A, %B %d %I:%M %p")
+  case ARGV[1]
+  when "long" # long date format
+    puts Time.now.strftime("%A, %B %d %I:%M %p")
+  when "short" # short time format
+    puts Time.now.strftime("%a, %b %d %I:%M %p")
+  when "time" # Just the time
+    puts Time.now.strftime("%I:%M %p")
+  when "longdate" # just the date in long format
+    puts Time.now.strftime("%A, %B %d")
+  when "shortdate" # just the date in short format
+    puts Time.now.strftime("%a, %b %d")
+  when "string"
+    puts Time.now.strftime("#{ARGV[2]}")
+  else
+    puts Time.now.strftime("%A, %B %d %I:%M %p")
+  end
 end
 
 def get_battery_info # gets the battery info on macbooks/pros
@@ -26,17 +65,15 @@ def get_battery_info # gets the battery info on macbooks/pros
   mb = `ioreg -l | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
   cb = `ioreg -l | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
   # determine battery % and round off to match system battery %
-  puts "Battery: #{(cb.to_f / mb.to_f * 100).round}% (#{time})"
+  puts "#{(cb.to_f / mb.to_f * 100).round}% (#{time})"
 end
 
 # determine which script to execute
-ARGV.each do|a|
-  case a
-  when "time" # report date & time
-    get_time_date()
-  when "battery" # report battery %
-    get_battery_info()
-  else
-    puts "geeklet #{a} does not exist"
-  end
+case ARGV[0]
+when "time" # report date & time
+  get_time_date()
+when "battery" # report battery %
+  get_battery_info()
+else
+  puts "geeklet #{a} does not exist"
 end
