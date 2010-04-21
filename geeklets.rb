@@ -18,7 +18,7 @@
 # =>  string: takes a ruby strftime formatted date string
 # =>    see http://ruby-doc.org/core/classes/Time.html#M000298
 # =>    example: geeklets.rb time string "%A, %B %d %I:%M %p" would yeild the same
-# =>    results as geeklets.sh time long, strings with spaces must be contained
+# =>    results as geeklets.rb time long, strings with spaces must be contained
 # =>    with quotation marks.
 #
 # =>  default behavior of time is to report long time format when there are
