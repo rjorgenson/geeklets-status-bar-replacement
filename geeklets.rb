@@ -44,28 +44,53 @@ def get_time_date # gets the current time and formats it as specified
 end
 
 def get_battery_info # gets the battery info on macbooks/pros
-  chrg = `ioreg -l | grep ExternalConnected | awk '{ print $5 }'` # is battery charged
-  timel = `ioreg -l | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
-  # display time remaining on battery or charging if plugged in
-  if chrg.strip == "Yes" then
-    time = "Charging"
-  else
-    if timel.strip == "0" then
-      time = "Calculating..."
+  
+  case ARGV[1] # determine what to process
+  when "percent"
+    mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
+    cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
+    puts "#{(cb.to_f / mb.to_f * 100).round}%"
+  when "time"
+    chrg = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is battery charged
+    timel = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
+    if chrg.strip == "Yes" then
+      time = "Charging"
     else
-      hour = timel.strip.to_i / 60
-      min = timel.strip.to_i - (hour * 60)
-      # fix minutes to be 2 digits long always
-      if min < 10 then
-        min = "0#{min}"
+      if timel.strip == "0" then
+        time = "Calculating..."
+      else
+        hour = timel.strip.to_i / 60
+        min = timel.strip.to_i - (hour * 60)
+        # fix minutes to be 2 digits long always
+        if min < 10 then
+          min = "0#{min}"
+        end
+        time = "#{hour}:#{min}"
       end
-      time = "#{hour}:#{min}"
     end
+    puts "#{time}"
+  else
+    chrg = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is battery charged
+    timel = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
+    mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
+    cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
+    if chrg.strip == "Yes" then
+      time = "Charging"
+    else
+      if timel.strip == "0" then
+        time = "Calculating..."
+      else
+        hour = timel.strip.to_i / 60
+        min = timel.strip.to_i - (hour * 60)
+        # fix minutes to be 2 digits long always
+        if min < 10 then
+          min = "0#{min}"
+        end
+        time = "#{hour}:#{min}"
+      end
+    end
+    puts "#{(cb.to_f / mb.to_f * 100).round}% (#{time})"
   end
-  mb = `ioreg -l | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
-  cb = `ioreg -l | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
-  # determine battery % and round off to match system battery %
-  puts "#{(cb.to_f / mb.to_f * 100).round}% (#{time})"
 end
 
 # determine which script to execute
