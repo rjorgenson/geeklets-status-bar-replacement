@@ -89,7 +89,7 @@ def get_battery_info # gets the battery info on macbooks/pros
     percent = (cb.to_f / mb.to_f * 100).round.to_i
     meter = ""
     for i in (1..10)
-      if percent > 10
+      if percent >= 10
         percent = percent - 10
         meter << "|"
       end
