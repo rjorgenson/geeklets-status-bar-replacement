@@ -1,5 +1,7 @@
 ** make battery run faster (remove multiple calls to ioreg)
 
+* fuzzy time option
+
 * add command options for seperate battery report items
 	percentage, time left, (un)connected
 
