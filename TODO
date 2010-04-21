@@ -1,5 +1,8 @@
 ** make battery run faster (remove multiple calls to ioreg)
 
+* make battery match to system battery meter better
+	requires more usage testing
+
 * fuzzy time option
 
 * add command options for seperate battery report items
