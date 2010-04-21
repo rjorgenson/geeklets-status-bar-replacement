@@ -90,9 +90,11 @@ def get_battery_info # gets the battery info on macbooks/pros
     meter = ""
     for i in (1..10)
       if percent >= 10
-        percent = percent - 10
         meter << "|"
+      else
+        meter << "-"
       end
+      percent = percent - 10
     end
     if chrg.strip == "Yes" then
       if timel.strip == "0" then
