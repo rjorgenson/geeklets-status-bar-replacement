@@ -1,0 +1,5 @@
+* add command options for seperate battery report items
+	percentage, time left, (un)connected
+
+* iTunes track display
+	current title, artist, album length etc
