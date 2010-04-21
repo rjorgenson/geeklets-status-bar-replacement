@@ -54,85 +54,61 @@ def get_time_date # gets the current time and formats it as specified
   end
 end
 
+def build_battery_meter(mb,cb)
+  percent = (cb.to_f / mb.to_f * 100).round.to_i
+  meter = ""
+  for i in (1..10)
+    if percent >= 10
+      meter << "|"
+    else
+      meter << "-"
+    end
+    percent = percent - 10
+  end
+  return meter
+end
+
+def build_battery_time(conn,chrg,timeR)
+  hour = timeR.strip.to_i / 60 # hours left
+  min = timeR.strip.to_i - (hour * 60) # minutes left
+  min < 10 ? min = "0#{min}" :  # make sure minutes is two digits long
+  
+  if conn.strip == "Yes" then # power cable connected
+    if chrg.strip == "Yes" then # is plugged in and charging
+      time = "Charging: #{hour}:#{min}"
+    else # is plugged in but not charging
+      time = "Charged: #{hour}:#{min}"
+    end
+  else # power is not connected
+    time = "#{hour}:#{min}"
+  end
+  return time
+end
+
 def get_battery_info # gets the battery info on macbooks/pros
   
   case ARGV[1] # determine what to process
   when "meter"
     mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
     cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
-    percent = (cb.to_f / mb.to_f * 100).round.to_i
-    meter = ""
-    for i in (1..10)
-      if percent >= 10
-        meter << "|"
-      else
-        meter << "-"
-      end
-      percent = percent - 10
-    end
-    puts meter
+    puts build_battery_meter(mb,cb)
   when "percent"
     mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
     cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
     puts "#{(cb.to_f / mb.to_f * 100).round}%"
   when "time"
-    chrg = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is battery charged
-    timel = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
-    if chrg.strip == "Yes" then
-      time = "Charging"
-    else
-      if timel.strip == "0" then
-        time = "Calculating..."
-      else
-        hour = timel.strip.to_i / 60
-        min = timel.strip.to_i - (hour * 60)
-        # fix minutes to be 2 digits long always
-        if min < 10 then
-          min = "0#{min}"
-        end
-        time = "#{hour}:#{min}"
-      end
-    end
-    puts "#{time}"
+    conn = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is power connected
+    chrg = `ioreg -n AppleSmartBattery | grep IsCharging | awk '{ print $5 }'` # is battery charging
+    timeR = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
+    puts build_battery_time(conn,chrg,timeR)
   else
-    chrg = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is battery charged
-    timel = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
+    conn = `ioreg -n AppleSmartBattery | grep ExternalConnected | awk '{ print $5 }'` # is power connected
+    chrg = `ioreg -n AppleSmartBattery | grep IsCharging | awk '{ print $5 }'` # is battery chargin
+    timeR = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
     mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
     cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
-    percent = (cb.to_f / mb.to_f * 100).round.to_i
-    meter = ""
-    for i in (1..10)
-      if percent >= 10
-        meter << "|"
-      else
-        meter << "-"
-      end
-      percent = percent - 10
-    end
-    if chrg.strip == "Yes" then
-      if timel.strip == "0" then
-        time = "Charged"
-      else
-        hour = timel.strip.to_i / 60
-        min = timel.strip.to_i - (hour * 60)
-        if min < 10 then
-          min = "0#{min}"
-        end
-        time = "Charging: #{hour}:#{min}"
-      end
-    else
-      if timel.strip == "0" then
-        time = "Calculating..."
-      else
-        hour = timel.strip.to_i / 60
-        min = timel.strip.to_i - (hour * 60)
-        # fix minutes to be 2 digits long always
-        if min < 10 then
-          min = "0#{min}"
-        end
-        time = "#{hour}:#{min}"
-      end
-    end
+    meter = build_battery_meter(mb,cb)
+    time = build_battery_time(conn,chrg,timeR)
     puts "#{meter} #{(cb.to_f / mb.to_f * 100).round}% (#{time})"
   end
 end
