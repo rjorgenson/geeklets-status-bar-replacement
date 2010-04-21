@@ -2,10 +2,10 @@
 #
 # Author: Robert (rjorgenson@gmail.com)
 #
-# Usage: geeklets.sh <arg1> <arg2> <arg3>
+# Usage: geeklets.rb <arg1> <arg2> <arg3>
 #
 # arg1 can be any supprted geeklet, currently time & battery
-# arg2 can be options for those geeklets as documented below
+# arg2 & arg3 can be options for those geeklets as documented below
 #
 # geeklet options:
 #
@@ -16,13 +16,24 @@
 # =>  longdate: reports just the date in long format (see above)
 # =>  shortdate: reports just the date in short format (see above)
 # =>  string: takes a ruby strftime formatted date string
-# =>  see http://ruby-doc.org/core/classes/Time.html#M000298
-# =>  example: geeklets.rb time string "%A, %B %d %I:%M %p" would yeild the same
-# =>  results as geeklets.sh time long, strings with spaces must be contained
-# =>  with quotation marks.
+# =>    see http://ruby-doc.org/core/classes/Time.html#M000298
+# =>    example: geeklets.rb time string "%A, %B %d %I:%M %p" would yeild the same
+# =>    results as geeklets.sh time long, strings with spaces must be contained
+# =>    with quotation marks.
 #
 # =>  default behavior of time is to report long time format when there are
 # =>  no arguments given
+#
+# => battery:
+# =>  time: reports just the ramining time until battery is charged/full
+# =>    depending on if it is plugged in or not
+# =>  percent: reports only the % of charge in the battery
+# =>  meter: displays a text based battery meter in increments of 10
+# =>    ex: ||||||---- charge is more than 60% but less than 70%
+# =>    not very granular
+#
+# =>  default behavior of battery is to output all 3 in the following order
+# =>    meter -> percent -> time
 
 def get_time_date # gets the current time and formats it as specified
   case ARGV[1]
