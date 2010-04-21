@@ -46,6 +46,18 @@ end
 def get_battery_info # gets the battery info on macbooks/pros
   
   case ARGV[1] # determine what to process
+  when "meter"
+    mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
+    cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
+    percent = (cb.to_f / mb.to_f * 100).round.to_i
+    meter = ""
+    for i in (1..10)
+      if percent > 10
+        percent = percent - 10
+        meter << "|"
+      end
+    end
+    puts meter
   when "percent"
     mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
     cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
@@ -74,8 +86,25 @@ def get_battery_info # gets the battery info on macbooks/pros
     timel = `ioreg -n AppleSmartBattery | grep TimeRemaining | awk '{ print $5 }'` # time remaining on battery
     mb = `ioreg -n AppleSmartBattery | grep MaxCapacity | awk '{ print $5 }'` # maximum capacity
     cb = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
+    percent = (cb.to_f / mb.to_f * 100).round.to_i
+    meter = ""
+    for i in (1..10)
+      if percent > 10
+        percent = percent - 10
+        meter << "|"
+      end
+    end
     if chrg.strip == "Yes" then
-      time = "Charging"
+      if timel.strip == "0" then
+        time = "Charged"
+      else
+        hour = timel.strip.to_i / 60
+        min = timel.strip.to_i - (hour * 60)
+        if min < 10 then
+          min = "0#{min}"
+        end
+        time = "Charging: #{hour}:#{min}"
+      end
     else
       if timel.strip == "0" then
         time = "Calculating..."
@@ -89,7 +118,7 @@ def get_battery_info # gets the battery info on macbooks/pros
         time = "#{hour}:#{min}"
       end
     end
-    puts "#{(cb.to_f / mb.to_f * 100).round}% (#{time})"
+    puts "#{meter} #{(cb.to_f / mb.to_f * 100).round}% (#{time})"
   end
 end
 
@@ -100,5 +129,5 @@ when "time" # report date & time
 when "battery" # report battery %
   get_battery_info()
 else
-  puts "geeklet #{a} does not exist"
+  puts "geeklet #{ARGV[0]} does not exist"
 end
