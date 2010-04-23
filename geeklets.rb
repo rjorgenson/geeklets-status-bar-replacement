@@ -71,13 +71,13 @@ end
 def build_battery_time(conn,chrg,timeR)
   hour = timeR.strip.to_i / 60 # hours left
   min = timeR.strip.to_i - (hour * 60) # minutes left
-  min < 10 ? min = "0#{min}" :  # make sure minutes is two digits long
+  min < 10 ? min = "0#{min}" : min = min # make sure minutes is two digits long
   
   if conn.strip == "Yes" then # power cable connected
     if chrg.strip == "Yes" then # is plugged in and charging
       time = "Charging: #{hour}:#{min}"
     else # is plugged in but not charging
-      time = "Charged: #{hour}:#{min}"
+      time = "Charged"
     end
   else # power is not connected
     time = "#{hour}:#{min}"
