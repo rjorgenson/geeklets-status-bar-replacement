@@ -52,11 +52,7 @@ class Battery
     percent = self.build_percent # get capacity percentage
     meter = ""
     for i in (1..10) # one bar per 10% battery, dashes for each empty 10%
-      if percent >= 10
-        meter << "|"
-      else
-        meter << "-"
-      end # if percent >= 10
+      percent >= 10 ? meter << "|" : meter << "-"
       percent -= 10 # decrement percentage for next loop
     end # for i in (1..10)
     return meter
@@ -71,11 +67,7 @@ class Battery
       if @chrg.strip == "Yes" then # is plugged in and charging
         batTime = "Charging: #{hour}:#{min}"
       else # is plugged in but not charging
-        if self.build_percent == 100 then
-          batTime = "Charged" # battery is fully charged
-        else
-          batTime = "Not Charging" # battery is not fully charged, but is not charging either
-        end # if self.build_percent == 100
+        self.build_percent == 100 ? batTime = "Charged" : batTime = "Not Charging"
       end # if @chrg.strip == "Yes"
     else # power is not connected
       batTime = "#{hour}:#{min}"
