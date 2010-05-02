@@ -70,7 +70,11 @@ class Battery
         self.build_percent == 100 ? batTime = "Charged" : batTime = "Not Charging"
       end # if @chrg.strip == "Yes"
     else # power is not connected
-      batTime = "#{hour}:#{min}"
+      if @time.to_i < 1 || @time.to_i > 2000 then
+        batTime = "Calculating"
+      else
+        batTime = "#{hour}:#{min}"
+      end # if @time < 1 || @ time > 2000 
     end # if @conn.strip == "Yes"
     
     return batTime
