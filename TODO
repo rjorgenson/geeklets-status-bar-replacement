@@ -10,3 +10,9 @@
 
 * iTunes track display
 	current title, artist, album length etc
+	
+* calendar script
+	colors http://www.termsys.demon.co.uk/vtansi.htm
+	
+* horizontal calendar
+	cal | sed -e '1d' -e '2p;2p;2p;2p;2p' | sed -e '$!N;s/\n/ /' -e '$!N;s/\n/ /' -e '$!N;s/\n/ /' -e '$!N;s/\n/ /' -e '$!N;s/\n/ /' | sed "s/^/ /;s/$/ /;s/ $(date +%e) / $(date +%e | sed 's/././g') /"
