@@ -48,14 +48,33 @@ class Battery
     @cur = `ioreg -n AppleSmartBattery | grep CurrentCapacity | awk '{ print $5 }'` # current capacity
   end # def initialize
 
-  def build_meter # built battery meter
+  def build_meter(color="yes") # built battery meter
     percent = self.build_percent # get capacity percentage
+    if color == "yes" then
+      red = "\e[31m"
+      yellow = "\e[33m"
+      green = "\e[32m"
+      clear = "\e[0m"
+    else
+      red = ""
+      yellow = ""
+      green = ""
+      clear = ""
+    end
     meter = ""
+    
     for i in (1..10) # one bar per 10% battery, dashes for each empty 10%
-      percent >= 10 ? meter << "|" : meter << "-"
+      if percent >= 10 then
+        i <= 2 ? meter << red : nil # first 2 bars red
+        i <= 5 && i > 2 ? meter << yellow : nil # next 3 bars yellow
+        i <= 10 && i > 5 ? meter << green : nil # remaining 5 green
+        meter << "|" + clear # clear color
+      else
+        meter << "-" # empty
+      end # if percent >= 10
       percent -= 10 # decrement percentage for next loop
     end # for i in (1..10)
-    return meter
+    return meter + clear
   end # def build_meter
   
   def build_time # determines time remaining on battery
@@ -96,13 +115,21 @@ when "battery"
   else
     case ARGV[1]
     when "meter"
-      puts batt.build_meter.to_s
+      if ARGV[2] == nil then
+        puts batt.build_meter.to_s
+      else
+        puts batt.build_meter(ARGV[2]).to_s
+      end
     when "percent"
       puts batt.build_percent.to_s
     when "time"
       puts batt.build_time.to_s
     else
-      puts batt.build_meter.to_s + " " + batt.build_percent.to_s + "% (" + batt.build_time.to_s + ")"
+      if ARGV[1] == nil then
+        puts batt.build_meter.to_s + " " + batt.build_percent.to_s + "% (" + batt.build_time.to_s + ")"
+      else
+        puts batt.build_meter(ARGV[1]).to_s + " " + batt.build_percent.to_s + "% (" + batt.build_time.to_s + ")"
+      end
     end # case ARGV[1]
   end # if ARGV[1] == nil
 when "time"
