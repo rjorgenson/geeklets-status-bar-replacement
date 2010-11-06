@@ -68,9 +68,9 @@ class Battery
         i <= 2 ? meter << red : nil # first 2 bars red
         i <= 5 && i > 2 ? meter << yellow : nil # next 3 bars yellow
         i <= 10 && i > 5 ? meter << green : nil # remaining 5 green
-        meter << "|" + clear # clear color
+        meter << "❚" + clear # clear color
       else
-        meter << "-" # empty
+        meter << "·" # empty
       end # if percent >= 10
       percent -= 10 # decrement percentage for next loop
     end # for i in (1..10)
